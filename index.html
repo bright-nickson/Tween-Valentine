@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://code.iconify.design https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://paystack.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src https://checkout.paystack.com;">
     <title>Skills is the New Love | Tweentech</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +12,7 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/jpeg" href="Primary-logo.jpg">
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-[#3E9DFF] selection:text-white">
 
@@ -107,10 +109,10 @@
                         <span class="text-sm text-slate-400 line-through">₵2,500</span>
                     </div>
                     
-                    <button onclick="openPurchaseModal('Cybersecurity', 2000)" class="w-full py-2.5 px-4 bg-[#003CB0] text-white text-sm font-medium rounded-lg hover:bg-[#002371] transition-colors shadow-sm focus:ring-4 focus:ring-[#003CB0]/20 focus:outline-none flex items-center justify-center gap-2">
+                    <a href="https://paystack.com/buy/tweentechcybersecurity-vals" target="_blank" rel="noopener" class="w-full py-2.5 px-4 bg-[#003CB0] text-white text-sm font-medium rounded-lg hover:bg-[#002371] transition-colors shadow-sm focus:ring-4 focus:ring-[#003CB0]/20 focus:outline-none flex items-center justify-center gap-2 text-center no-underline">
                         Buy Now
                         <iconify-icon icon="solar:arrow-right-linear" width="16" stroke-width="1.5"></iconify-icon>
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Card 3: Data Science -->
@@ -128,10 +130,10 @@
                         <span class="text-sm text-slate-400 line-through">₵3,000</span>
                     </div>
                     
-                    <button onclick="openPurchaseModal('Data Science & Analytics', 2400)" class="w-full py-2.5 px-4 bg-[#003CB0] text-white text-sm font-medium rounded-lg hover:bg-[#002371] transition-colors shadow-sm focus:ring-4 focus:ring-[#003CB0]/20 focus:outline-none flex items-center justify-center gap-2">
+                    <a href="https://paystack.com/buy/data-science--analytics-2026vals" target="_blank" rel="noopener" class="w-full py-2.5 px-4 bg-[#003CB0] text-white text-sm font-medium rounded-lg hover:bg-[#002371] transition-colors shadow-sm focus:ring-4 focus:ring-[#003CB0]/20 focus:outline-none flex items-center justify-center gap-2 text-center no-underline">
                         Buy Now
                         <iconify-icon icon="solar:arrow-right-linear" width="16" stroke-width="1.5"></iconify-icon>
-                    </button>
+                    </a>
                 </div>
 
             </div>
@@ -146,8 +148,14 @@
                 <img src="Primary-logo.jpg" alt="Tweentech Logo" class="h-12 w-auto object-contain">
             </div>
             
-            <div class="text-xs text-slate-400">
-                &copy; 2024 Tweentech. All rights reserved.
+            <div class="flex flex-col items-center gap-1">
+                <div class="text-xs text-slate-500">
+                    <a href="mailto:admin@tweentechnologies.com" class="hover:underline">admin@tweentechnologies.com</a> |
+                    <a href="https://wa.me/233240547782" target="_blank" rel="noopener" class="hover:underline">+233240547782 (Whatsapp)</a>
+                </div>
+                <div class="text-xs text-slate-400">
+                    &copy; 2024 Tweentech. All rights reserved.
+                </div>
             </div>
         </div>
     </footer>
