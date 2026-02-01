@@ -1,0 +1,85 @@
+/* ===================================
+   BASE STYLES
+   =================================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+}
+
+/* ===================================
+   WATERMARK (SECONDARY LOGO)
+   =================================== */
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('secondary-logo.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% auto;
+    opacity: 0.25;
+    z-index: 1;
+    pointer-events: none;
+    display: block;
+}
+
+/* ===================================
+   CUSTOM SCROLLBAR
+   =================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ===================================
+   GLASS PANEL EFFECT
+   =================================== */
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 2;
+}
+
+/* ===================================
+   Z-INDEX LAYERING
+   =================================== */
+
+nav {
+    z-index: 40;
+    position: relative;
+}
+
+section {
+    position: relative;
+    z-index: 2;
+}
+
+footer {
+    position: relative;
+    z-index: 2;
+}
