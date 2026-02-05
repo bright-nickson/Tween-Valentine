@@ -2,7 +2,7 @@
 // CONFIGURATION
 // ===================================
 
-const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Placeholder Key - Replace with your actual Paystack public key
+const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Replace with your actual Paystack public key
 
 // ===================================
 // STATE
@@ -11,22 +11,12 @@ const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Place
 let currentCourse = { name: '', price: 0 };
 
 // ===================================
-// DOM ELEMENTS
-// ===================================
-
-const purchaseModal = document.getElementById('purchaseModal');
-const waitlistModal = document.getElementById('waitlistModal');
-const purchaseBackdrop = document.getElementById('purchaseBackdrop');
-const waitlistBackdrop = document.getElementById('waitlistBackdrop');
-const purchasePanel = document.getElementById('purchasePanel');
-const waitlistPanel = document.getElementById('waitlistPanel');
-const successToast = document.getElementById('successToast');
-
-// ===================================
-// MODAL ANIMATION FUNCTIONS
+// MODAL FUNCTIONS
 // ===================================
 
 function animateModal(modal, backdrop, panel, show) {
+    if (!modal || !backdrop || !panel) return;
+    
     if (show) {
         modal.classList.remove('hidden');
         // Trigger reflow
@@ -40,7 +30,7 @@ function animateModal(modal, backdrop, panel, show) {
         setTimeout(() => {
             modal.classList.add('hidden');
             document.body.style.overflow = '';
-        }, 300);
+        }, 200);
     }
 }
 
@@ -49,29 +39,32 @@ function animateModal(modal, backdrop, panel, show) {
 // ===================================
 
 function openPurchaseModal(name, price) {
+    const purchaseModal = document.getElementById('purchaseModal');
+    const purchaseBackdrop = document.getElementById('purchaseBackdrop');
+    const purchasePanel = document.getElementById('purchasePanel');
+    
     currentCourse = { name, price };
     document.getElementById('selectedCourseName').textContent = name;
     document.getElementById('payButtonAmount').textContent = `₵${price.toLocaleString()}`;
-    animateModal(purchaseModal, purchaseBackdrop, purchasePanel, true);
+    
+    if (purchaseModal && purchaseBackdrop && purchasePanel) {
+        animateModal(purchaseModal, purchaseBackdrop, purchasePanel, true);
+    }
 }
 
 function closePurchaseModal() {
-    animateModal(purchaseModal, purchaseBackdrop, purchasePanel, false);
-    document.getElementById('purchaseForm').reset();
-    toggleGiftFields(); // Reset to hidden
+    const purchaseModal = document.getElementById('purchaseModal');
+    const purchaseBackdrop = document.getElementById('purchaseBackdrop');
+    const purchasePanel = document.getElementById('purchasePanel');
+    
+    if (purchaseModal && purchaseBackdrop && purchasePanel) {
+        animateModal(purchaseModal, purchaseBackdrop, purchasePanel, false);
+        const form = document.getElementById('purchaseForm');
+        if (form) form.reset();
+        toggleGiftFields(); // Reset to hidden
+    }
 }
 
-// ===================================
-// WAITLIST MODAL FUNCTIONS
-// ===================================
-
-function openWaitlistModal() {
-    animateModal(waitlistModal, waitlistBackdrop, waitlistPanel, true);
-}
-
-function closeWaitlistModal() {
-    animateModal(waitlistModal, waitlistBackdrop, waitlistPanel, false);
-}
 
 // ===================================
 // GIFT FIELDS TOGGLE
@@ -94,26 +87,22 @@ function toggleGiftFields() {
     }
 }
 
-// ===================================
-// WAITLIST HANDLER
-// ===================================
-
-function handleWaitlist(e) {
-    e.preventDefault();
-    closeWaitlistModal();
-    showToast('You have been added to the waitlist!');
-}
 
 // ===================================
 // TOAST NOTIFICATION
 // ===================================
 
 function showToast(message) {
-    document.getElementById('successMessage').textContent = message;
-    successToast.classList.remove('translate-y-20', 'opacity-0');
-    setTimeout(() => {
-        successToast.classList.add('translate-y-20', 'opacity-0');
-    }, 4000);
+    const successToast = document.getElementById('successToast');
+    const successMessage = document.getElementById('successMessage');
+    
+    if (successMessage) successMessage.textContent = message;
+    if (successToast) {
+        successToast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            successToast.classList.add('translate-y-20', 'opacity-0');
+        }, 4000);
+    }
 }
 
 // ===================================
@@ -123,66 +112,97 @@ function showToast(message) {
 function handlePayment(e) {
     e.preventDefault();
     
-    const email = document.getElementById('buyerEmail').value;
-    const name = document.getElementById('buyerName').value;
+    const email = document.getElementById('buyerEmail')?.value;
+    const name = document.getElementById('buyerName')?.value;
     
-    // Basic Email Validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert('Please enter a valid email address');
+    // Basic validation
+    if (!email || !name) {
+        showToast('Please fill in all required fields');
         return;
     }
-
-    // Determine if gift
-    const isGift = document.querySelector('input[name="purchaseType"]:checked').value === 'gift';
-    let metadata = {
-        custom_fields: [
-            { display_name: "Course", variable_name: "course", value: currentCourse.name },
-            { display_name: "Type", variable_name: "type", value: isGift ? "Gift" : "Personal" }
-        ]
-    };
-
-    if (isGift) {
-        metadata.custom_fields.push({
-            display_name: "Recipient",
-            variable_name: "recipient_email",
-            value: document.getElementById('recipientEmail').value
-        });
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address');
+        return;
     }
-
-    const handler = PaystackPop.setup({
-        key: PAYSTACK_PUBLIC_KEY,
-        email: email,
-        amount: currentCourse.price * 100, // Amount in kobo (or pesewas for Ghana)
-        currency: 'GHS',
-        metadata: metadata,
-        callback: function(response) {
-            closePurchaseModal();
-            const msg = isGift 
-                ? 'Gift sent successfully! Confirmation emailed.' 
-                : 'Enrollment successful! Check your email.';
-            showToast(msg);
-        },
-        onClose: function() {
-            // Transaction was not completed, window closed.
+    
+    const isGift = document.querySelector('input[name="purchaseType"]:checked')?.value === 'gift';
+    const metadata = {
+        course_name: currentCourse.name,
+        buyer_email: email,
+        buyer_name: name,
+        is_gift: isGift
+    };
+    
+    // Add gift recipient info if this is a gift
+    if (isGift) {
+        const recipientName = document.getElementById('recipientName')?.value || '';
+        const recipientEmail = document.getElementById('recipientEmail')?.value || '';
+        
+        if (!recipientName.trim() || !recipientEmail.trim()) {
+            showToast('Please fill in all recipient details');
+            return;
         }
-    });
-    handler.openIframe();
+        
+        if (!emailRegex.test(recipientEmail)) {
+            showToast('Please enter a valid recipient email');
+            return;
+        }
+        
+        metadata.recipient_name = recipientName;
+        metadata.recipient_email = recipientEmail;
+    }
+    
+    // Check if Paystack is loaded
+    if (typeof PaystackPop === 'undefined') {
+        showToast('Payment service is currently unavailable. Please try again later.');
+        console.error('Paystack script not loaded');
+        return;
+    }
+    
+    try {
+        const handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: email,
+            amount: currentCourse.price * 100, // Amount in kobo (or pesewas for Ghana)
+            currency: 'GHS',
+            metadata: metadata,
+            callback: function(response) {
+                closePurchaseModal();
+                const msg = isGift 
+                    ? 'Gift sent successfully! Confirmation emailed.' 
+                    : 'Enrollment successful! Check your email.';
+                showToast(msg);
+            },
+            onClose: function() {
+                // Transaction was not completed, window closed
+            }
+        });
+        
+        handler.openIframe();
+    } catch (error) {
+        console.error('Payment initialization error:', error);
+        showToast('Error initializing payment. Please try again.');
+    }
 }
 
 // ===================================
 // EVENT LISTENERS
 // ===================================
 
-// Close modals on clicking outside
-purchaseModal.addEventListener('click', (e) => {
-    if (e.target === purchaseBackdrop || e.target.closest('.w-screen') === e.target) {
-        closePurchaseModal();
+document.addEventListener('DOMContentLoaded', () => {
+    // Close purchase modal on clicking outside
+    const purchaseModal = document.getElementById('purchaseModal');
+    const purchaseBackdrop = document.getElementById('purchaseBackdrop');
+    
+    if (purchaseModal && purchaseBackdrop) {
+        purchaseModal.addEventListener('click', (e) => {
+            if (e.target === purchaseBackdrop || e.target.closest('.w-screen') === e.target) {
+                closePurchaseModal();
+            }
+        });
     }
 });
 
-waitlistModal.addEventListener('click', (e) => {
-    if (e.target === waitlistBackdrop || e.target.closest('.w-screen') === e.target) {
-        closeWaitlistModal();
-    }
-});
